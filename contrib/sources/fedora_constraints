@@ -1,0 +1,7 @@
+---
+includes:
+  - python-requests.*
+
+
+excludes:
+  - python-requests-kerberos

@@ -1,0 +1,4 @@
+#dnf is not on PyPI
+#dnf
+six>=1.10
+PyYAML

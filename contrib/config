@@ -1,0 +1,16 @@
+[main]
+workers = 8
+output_dir = output/
+releasever=27
+basearch=x86_64
+
+[sources.fedora]
+type=repofile
+repofile=sources/fedora.repo
+constraints=sources/fedora_constraints
+releasever=28
+basearch=x86_64
+
+[sources.koji]
+type=koji
+
