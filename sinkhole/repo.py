@@ -35,7 +35,7 @@ class RepositoryFile(object):
             # failover on a string
             try:
                 config.read_string(repofn)
-            except Exception as err:
+            except Exception:
                 raise IOError("File {:s} does not exists".format(repofn))
         else:
             config.read(repofn)
@@ -63,11 +63,11 @@ class Reposync(object):
     Repositories to sync are specified by feeding this class with your classic
     .repo files.
     """
-    def __init__(self, repofns=[],
+    def __init__(self, repofns=None,
                  include_pkgs=None, exclude_pkgs=None):
         self.include_pkgs = include_pkgs
         self.exclude_pkgs = exclude_pkgs
-        self.repofns = repofns
+        self.repofns = repofns if repofns is not None else []
         self.base = dnf.Base()
         self.conf = self.base.conf
         config = Config()
@@ -86,23 +86,25 @@ class Reposync(object):
 
     @classmethod
     def build(cls, info):
-        r, include_pkgs, exclude_pkgs = None, None, None
+        """Build an instance of Reposync
+        """
+        reposync, include_pkgs, exclude_pkgs = None, None, None
         repofile = info["repofile"]
         if "constraints" in info:
             constraints_file = info["constraints"]
-            with open(constraints_file, "r") as f:
-                constraints = yaml.load(f, Loader=yaml.Loader)
+            with open(constraints_file, "r") as cfile:
+                constraints = yaml.load(cfile, Loader=yaml.Loader)
                 include_pkgs = constraints["includes"]
                 exclude_pkgs = constraints["excludes"]
 
-        r = cls([repofile],
-                include_pkgs=include_pkgs,
-                exclude_pkgs=exclude_pkgs)
+        reposync = cls([repofile],
+                       include_pkgs=include_pkgs,
+                       exclude_pkgs=exclude_pkgs)
 
         for sub in ["releasever", "basearch"]:
             if sub in info:
-                r.substitutions[sub] = info[sub]
-        return r
+                reposync.substitutions[sub] = info[sub]
+        return reposync
 
     def run(self):
         """ Do the repo syncing

@@ -37,12 +37,14 @@ class KojiDownloader(object):
         self._builds = self.builds(builds)
 
     def builds(self, builds_):
+        """defines builds to be downloaded
+        """
         res = []
         for build in builds_:
             if "@latest" in build:
-                b = build[:build.find("@")]
-                pkgId = self.koji.getPackageID(b)
-                info = self.koji.listBuilds(pkgId)
+                build = build[:build.find("@")]
+                pkg_id = self.koji.getPackageID(build)
+                info = self.koji.listBuilds(pkg_id)
                 if info:
                     res.append(info[0]['nvr'])
             else:
@@ -51,10 +53,12 @@ class KojiDownloader(object):
 
     @classmethod
     def build(cls, info):
-        kd = None
+        """Build a KojiDownloader instance
+        """
+        kojid = None
         profile = info["profile"]
-        kd = cls(profile)
-        return kd
+        kojid = cls(profile)
+        return kojid
 
     def run(self):
         """ Execute downloads

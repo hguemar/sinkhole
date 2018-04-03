@@ -1,3 +1,5 @@
+""" Source provider factory
+"""
 from collections import defaultdict
 
 from sinkhole.config import Config

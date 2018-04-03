@@ -52,7 +52,8 @@ def main():
         kojid.run()
     else:
         sources = SourceBuilder.build()
-        [source.run() for source in sources]
+        for source in sources:
+            source.run()
 
 
 if __name__ == '__main__':
