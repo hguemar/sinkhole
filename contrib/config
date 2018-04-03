@@ -6,8 +6,8 @@ basearch=x86_64
 
 [sources.fedora]
 type=repofile
-repofile=sources/fedora.repo
-constraints=sources/fedora_constraints
+repofile=contrib/sources/fedora.repo
+constraints=contrib/sources/fedora_constraints
 releasever=28
 basearch=x86_64
 

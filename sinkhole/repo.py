@@ -4,6 +4,7 @@
 from functools import partial
 from multiprocessing import Pool
 import os
+import shutil
 
 import dnf
 from dnf.conf.parser import substitute
@@ -64,7 +65,8 @@ class Reposync(object):
     .repo files.
     """
     def __init__(self, repofns=None,
-                 include_pkgs=None, exclude_pkgs=None):
+                 include_pkgs=None,
+                 exclude_pkgs=None):
         self.include_pkgs = include_pkgs
         self.exclude_pkgs = exclude_pkgs
         self.repofns = repofns if repofns is not None else []
@@ -75,7 +77,7 @@ class Reposync(object):
             config.default_substitutions["releasever"]
         self.conf.substitutions['basearch'] = \
             config.default_substitutions["basearch"]
-        self.conf.cachedir = Config().output_dir
+        self.conf.cachedir = os.path.join(Config().output_dir, "cache")
         self.repos = self.base.repos
 
     @property
@@ -128,8 +130,16 @@ class Reposync(object):
         # 699.75s user 195.08s system 14% cpu 1:41:17.52 total
         # self.base.download_packages(download_pkgs,
         #                             MultiFileProgressMeter(fo=sys.stdout))
+        self._cleanup_dnf_artefacts()
+
+    def _cleanup_dnf_artefacts(self):
+        """ Delete dnf metadata artefacts
+        """
+        shutil.rmtree(self.conf.cachedir)
 
     def _setup_repos(self):
+        """Parse repository files
+        """
         for repofn in self.repofns:
             repofile = RepositoryFile(self.conf, repofn)
             repositories = repofile.get_repos()

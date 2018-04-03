@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* kojidownload command now can define download directory
 * Tox: enable py36 env by default
 * Pylint fixes
 * Fix PEP8 warnings
