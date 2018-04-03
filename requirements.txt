@@ -2,3 +2,5 @@
 #dnf
 six>=1.10
 PyYAML
+requests
+mock; python_version == '2.7'

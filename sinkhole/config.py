@@ -2,7 +2,6 @@
 """
 
 from six.moves import configparser
-import six
 
 
 class Config(object):
@@ -10,7 +9,7 @@ class Config(object):
 
     Uses Borg pattern to keep shared state across instances
     """
-    _shared_state  = {
+    _shared_state = {
         "_workers": 4,
         "_output_dir": "tmp/",
         "_sources": [],
@@ -68,13 +67,14 @@ class Config(object):
         output_dir = cf.get("main", "output_dir")
         config.workers = workers
         config.output_dir = output_dir
-        config.default_substitutions["releasever"] = cf.get("main", "releasever")
+        config.default_substitutions["releasever"] = \
+            cf.get("main", "releasever")
         config.default_substitutions["basearch"] = cf.get("main", "basearch")
         sources = [section for section in cf.sections()
                    if section.startswith("sources")]
         config.sources = []
         for source in sources:
-            s = { k: cf.get(source, k) for k in cf.options(source) }
+            s = {k: cf.get(source, k) for k in cf.options(source)}
             s["name"] = source
             config.sources.append(s)
         return config

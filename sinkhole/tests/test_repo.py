@@ -1,9 +1,11 @@
 from sinkhole.repo import RepositoryFile
 
-from six import add_move, MovedModule
-add_move(MovedModule('mock', 'mock', 'unittest.mock'))
-
-from six.moves import mock
+import pytest
+import six
+if six.PY3:
+    import unittest.mock as mock
+else:
+    import mock
 
 
 class TestRepositoryFile(object):
@@ -20,5 +22,15 @@ enabled=1
 enabled_metadata=1"""
 
         m = mock.mock_open(read_data=data)
-        assert True
-        
+        with mock.patch("os.path.isfile", return_value=True):
+            with mock.patch("__main__.open", m, create=True):
+                r = RepositoryFile(None, "something.repo")
+                assert r.repofile == "something.repo"
+                repos = r.get_repos()
+                assert len(repos) == 1
+
+    def test_raise_error_non_existing_config(self):
+        repofn = "toto.conf"
+        with pytest.raises(IOError,
+                           message="File {:s} does not exist".format(repofn)):
+            RepositoryFile(None, repofn)

@@ -3,10 +3,9 @@
 
 from functools import partial
 from multiprocessing import Pool
-import sys
+import os
 
 import dnf
-from dnf.cli.progress import MultiFileProgressMeter
 from dnf.conf.parser import substitute
 import six
 from six.moves import configparser
@@ -25,8 +24,12 @@ class RepositoryFile(object):
         self._parse_repofile(repofn, conf)
 
     def _parse_repofile(self, repofn, conf):
+        if not os.path.isfile(repofn):
+            raise IOError("File {:s} does not exists".format(repofn))
+
         config = configparser.ConfigParser()
         config.read(repofn)
+
         for section in config.sections():
             repo = dnf.repo.Repo(section, conf)
             for key, value in six.iteritems(config[section]):
@@ -92,7 +95,6 @@ class Reposync(object):
                 r.substitutions[sub] = info[sub]
         return r
 
-
     def run(self):
         """ Do the repo syncing
         """
@@ -101,15 +103,20 @@ class Reposync(object):
         available_pkgs = self.base.sack.query().available().run()
         download_pkgs = self._filter_download_pkgs(available_pkgs)
         #
-        # sinkhole --repofile fedora.repo --destdir tmp2  23.27s user 2.14s system 1% cpu 28:19.24 total
+        # sinkhole --repofile fedora.repo --destdir tmp2
+        # 23.27s user 2.14s system 1% cpu 28:19.24 total
         download_pkgs = [pkg.remote_location() for pkg in download_pkgs]
 
         config = Config()
         with Pool(config.workers) as pool:
-            pool.map(partial(download_packages, destdir=config.output_dir), download_pkgs)
+            pool.map(partial(download_packages,
+                             destdir=config.output_dir),
+                     download_pkgs)
         # 3161
-        # sinkhole --repofile fedora.repo --destdir tmp2  699.75s user 195.08s system 14% cpu 1:41:17.52 total
-        # self.base.download_packages(download_pkgs, MultiFileProgressMeter(fo=sys.stdout))
+        # sinkhole --repofile fedora.repo --destdir tmp2
+        # 699.75s user 195.08s system 14% cpu 1:41:17.52 total
+        # self.base.download_packages(download_pkgs,
+        #                             MultiFileProgressMeter(fo=sys.stdout))
 
     def _setup_repos(self):
         for repofn in self.repofns:
@@ -128,8 +135,8 @@ class Reposync(object):
             list: packages to download
         """
         included = set(pkgs) if not self.include_pkgs else \
-                   filter_pkgs(pkgs, self.include_pkgs)
+            filter_pkgs(pkgs, self.include_pkgs)
         excluded = set() if not self.exclude_pkgs else \
-                   filter_pkgs(pkgs, self.exclude_pkgs)
+            filter_pkgs(pkgs, self.exclude_pkgs)
         pkgs = list(included - excluded)
         return pkgs

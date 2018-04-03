@@ -20,7 +20,8 @@ def main():
     subparsers = parser.add_subparsers(dest="subcommand")
 
     # reposync
-    parser_reposync = subparsers.add_parser("reposync", help="Sync repositories")
+    parser_reposync = subparsers.add_parser("reposync",
+                                            help="Sync repositories")
     parser_reposync.add_argument("--destdir", action="store", required=True)
     parser_reposync.add_argument("--repofile", action="append", dest="repofns",
                                  required=True)
@@ -28,25 +29,31 @@ def main():
     parser_reposync.add_argument("--exclude", action="append", default=None)
 
     # kojidownload
-    parser_koji = subparsers.add_parser("kojidownload", help="Download builds from Koji")
-    parser_koji.add_argument("--profile", action="store", default="koji")
-    parser_koji.add_argument("--builds", action="store", nargs="+", required=True)
+    parser_koji = subparsers.add_parser("kojidownload",
+                                        help="Download builds from Koji")
+    parser_koji.add_argument("--profile", action="store", default="koji",
+                             help="Koji instance to retrieve builds from")
+    parser_koji.add_argument("--arch", action="store", nargs="+",
+                             default=None)
+    parser_koji.add_argument("--builds", action="store", nargs="+",
+                             required=True)
 
     # Run appropriate command
     args = parser.parse_args()
 
     config = Config.read_config(args.config) if args.config else Config()
-        
+
     if args.subcommand == "reposync":
         config.output_dir = args.destdir
         reposync = Reposync(args.repofns, args.include, args.exclude)
         reposync.run()
     elif args.subcommand == "kojidownload":
-        kojid = KojiDownloader(args.profile, args.builds)
+        kojid = KojiDownloader(args.profile, args.builds, args.arch)
         kojid.run()
     else:
         sources = SourceBuilder.build()
         [source.run() for source in sources]
+
 
 if __name__ == '__main__':
     main()

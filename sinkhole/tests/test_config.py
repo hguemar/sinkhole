@@ -12,7 +12,6 @@ class TestConfig(object):
         assert configA.workers == configB.workers == 4
         assert configA.output_dir == configB.output_dir == "/tmp/some_dir"
 
-
     def test_read_config(self):
         data = StringIO("""[main]
 workers = 8
@@ -30,4 +29,3 @@ constraints=sources/fedora_constraints
         assert c.output_dir == "output/"
         assert c.default_substitutions["releasever"] == "28"
         assert c.default_substitutions["basearch"] == "x86_64"
-        

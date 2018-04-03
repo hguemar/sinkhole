@@ -16,7 +16,7 @@ class Noop(object):
         return None
 
 
-SOURCES = { "repofile": Reposync  }
+SOURCES = {"repofile": Reposync}
 SOURCES = defaultdict(lambda: Noop, SOURCES)
 
 
@@ -33,11 +33,5 @@ class SourceBuilder(object):
             typ = info["type"]
             source = SOURCES[typ].build(info)
             if source:
-              sources.append(source)
+                sources.append(source)
         return sources
-
-    
-
-
-
-

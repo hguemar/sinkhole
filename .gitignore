@@ -183,3 +183,5 @@ tags
 
 # End of https://www.gitignore.io/api/git,vim,emacs,python
 
+# RPMs
+**/*.rpm
