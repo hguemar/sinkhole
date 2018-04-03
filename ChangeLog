@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Fix Reposync to clean dnf metadata after download is done
 * kojidownload command now can define download directory
 * Tox: enable py36 env by default
 * Pylint fixes

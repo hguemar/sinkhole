@@ -3,6 +3,7 @@
 from collections import defaultdict
 
 from sinkhole.config import Config
+from sinkhole.kojidl import KojiDownloader
 from sinkhole.repo import Reposync
 
 
@@ -18,7 +19,7 @@ class Noop(object):
         return None
 
 
-SOURCES = {"repofile": Reposync}
+SOURCES = {"repofile": Reposync, "koji": KojiDownloader}
 SOURCES = defaultdict(lambda: Noop, SOURCES)
 
 

@@ -13,4 +13,6 @@ basearch=x86_64
 
 [sources.koji]
 type=koji
+profile=koji
+constraints=contrib/sources/koji_constraints
 

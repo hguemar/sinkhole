@@ -5,6 +5,7 @@ import os.path
 
 import koji
 import six
+import yaml
 
 from sinkhole.config import Config
 from sinkhole.util import download_packages
@@ -58,7 +59,12 @@ class KojiDownloader(object):
         """
         kojid = None
         profile = info["profile"]
-        kojid = cls(profile)
+        constraints_file = info["constraints"]
+        with open(constraints_file, "r") as cfile:
+            constraints = yaml.load(cfile, Loader=yaml.Loader)
+            builds = constraints["builds"]
+
+        kojid = cls(profile, builds)
         return kojid
 
     def run(self):
