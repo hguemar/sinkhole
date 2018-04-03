@@ -14,6 +14,11 @@ import yaml
 from sinkhole.config import Config
 from sinkhole.util import (download_packages, filter_pkgs)
 
+if six.PY2:
+    # ConfigParser.read_string has been added in Python 3.2
+    import io
+    configparser.ConfigParser.read_string = \
+        lambda self, x: configparser.ConfigParser.readfp(self, io.BytesIO(x))
 
 class RepositoryFile(object):
     """ RepositoryFile parses a .repo file
@@ -24,15 +29,18 @@ class RepositoryFile(object):
         self._parse_repofile(repofn, conf)
 
     def _parse_repofile(self, repofn, conf):
-        if not os.path.isfile(repofn):
-            raise IOError("File {:s} does not exists".format(repofn))
-
         config = configparser.ConfigParser()
-        config.read(repofn)
-
+        if not os.path.isfile(repofn):
+            # failover on a string
+            try:
+                config.read_string(repofn)
+            except Exception as err:
+                raise IOError("File {:s} does not exists".format(repofn))
+        else:
+            config.read(repofn)
         for section in config.sections():
             repo = dnf.repo.Repo(section, conf)
-            for key, value in six.iteritems(config[section]):
+            for key, value in config.items(section):
                 if key in ["name", "baseurl", "enabled",
                            "gpgkey", "gpgcheck"]:
                     setattr(repo, key, value)
