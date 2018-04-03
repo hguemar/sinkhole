@@ -1,7 +1,6 @@
 """ Koji interaction
 """
 
-from collections import Iterable
 import os.path
 
 import koji
@@ -65,10 +64,12 @@ class KojiDownloader(object):
         for build in self._builds:
             try:
                 info = self.koji.getBuild(build)
-                rpms = self.koji.listRPMs(buildID=info['id'], arches=self._arches)
+                rpms = self.koji.listRPMs(buildID=info['id'],
+                                          arches=self._arches)
                 fnames = [pathinfo.rpm(rpm) for rpm in rpms]
-                urls += [pathinfo.build(info) + '/' + fname for fname in fnames]
-            except:
+                urls += [pathinfo.build(info) + '/' + fname
+                         for fname in fnames]
+            except Exception:
                 print('SKIPPED: build {} does not exists'.format(build))
         for url in urls:
             download_packages(url, ".")

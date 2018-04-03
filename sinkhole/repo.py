@@ -20,6 +20,7 @@ if six.PY2:
     configparser.ConfigParser.read_string = \
         lambda self, x: configparser.ConfigParser.readfp(self, io.BytesIO(x))
 
+
 class RepositoryFile(object):
     """ RepositoryFile parses a .repo file
     """
