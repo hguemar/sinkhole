@@ -1,4 +1,10 @@
 CHANGES
 =======
 
+* Tox: enable py36 env by default
+* Pylint fixes
+* Fix PEP8 warnings
+* Fix repository file parsing to work on both 2.7 and 3.2+
+* Fix tox to run unit tests
+* Various fixes
 * Initial state

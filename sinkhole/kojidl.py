@@ -6,6 +6,7 @@ import os.path
 import koji
 import six
 
+from sinkhole.config import Config
 from sinkhole.util import download_packages
 
 
@@ -65,6 +66,7 @@ class KojiDownloader(object):
         """
         urls = []
         pathinfo = koji.PathInfo(topdir=self.koji.opts['topurl'])
+        config = Config()
         for build in self._builds:
             try:
                 info = self.koji.getBuild(build)
@@ -76,4 +78,4 @@ class KojiDownloader(object):
             except Exception:
                 print('SKIPPED: build {} does not exists'.format(build))
         for url in urls:
-            download_packages(url, ".")
+            download_packages(url, config.output_dir)

@@ -37,6 +37,7 @@ def main():
                              default=None)
     parser_koji.add_argument("--builds", action="store", nargs="+",
                              required=True)
+    parser_koji.add_argument("--destdir", action="store", required=True)
 
     # Run appropriate command
     args = parser.parse_args()
@@ -48,6 +49,7 @@ def main():
         reposync = Reposync(args.repofns, args.include, args.exclude)
         reposync.run()
     elif args.subcommand == "kojidownload":
+        config.output_dir = args.destdir
         kojid = KojiDownloader(args.profile, args.builds, args.arch)
         kojid.run()
     else:
