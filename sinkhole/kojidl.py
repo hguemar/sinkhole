@@ -58,7 +58,7 @@ class KojiDownloader(object):
 
         build, tag = build.split("@")
         info = None
-        if tag is "latest":
+        if tag == "latest":
             pkg_id = self.koji.getPackageID(build)
             info = self.koji.listBuilds(pkg_id)
         else:
