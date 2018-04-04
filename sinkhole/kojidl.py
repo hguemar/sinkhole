@@ -39,19 +39,33 @@ class KojiDownloader(object):
         self._builds = self.builds(builds)
 
     def builds(self, builds_):
-        """defines builds to be downloaded
+        """ Defines builds to be downloaded
         """
         res = []
         for build in builds_:
-            if "@latest" in build:
-                build = build[:build.find("@")]
-                pkg_id = self.koji.getPackageID(build)
-                info = self.koji.listBuilds(pkg_id)
-                if info:
-                    res.append(info[0]['nvr'])
+            nvr = self._retrieve_nvr(build)
+            if nvr:
+                res.append(nvr)
             else:
-                res.append(build)
+                print("Error: {} not Found in {}".format(build). self.profile)
         return res
+
+    def _retrieve_nvr(self, build):
+        """ Retrieve NVR from Koji instance
+        """
+        if "@" not in build:
+            return build
+
+        build, tag = build.split("@")
+        info = None
+        if tag is "latest":
+            pkg_id = self.koji.getPackageID(build)
+            info = self.koji.listBuilds(pkg_id)
+        else:
+            info = self.koji.listTagged(tag, package=build)
+
+        nvr = info[0]['nvr'] if info else None
+        return nvr
 
     @classmethod
     def build(cls, info):
