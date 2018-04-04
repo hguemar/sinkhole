@@ -1,6 +1,7 @@
 CHANGES
 =======
 
+* Reintroduce support to download latest build from a specific tag
 * Fix KojiDownloader to be usable as a source provider
 * Fix Reposync to clean dnf metadata after download is done
 * kojidownload command now can define download directory

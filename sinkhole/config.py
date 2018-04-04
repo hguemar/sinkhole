@@ -18,8 +18,9 @@ class Config(object):
         "_workers": 4,
         "_output_dir": "tmp/",
         "_sources": [],
-        "_default_substitutions": {}
-
+        "_default_substitutions": {},
+        "_masher_opts": "",
+        "_masher_workers": 1
     }
 
     def __init__(self):
@@ -67,6 +68,30 @@ class Config(object):
         """
         return self._default_substitutions
 
+    @property
+    def masher_opts(self):
+        """Property: masher_opts (createrepo options)
+        """
+        return self._masher_opts
+
+    @masher_opts.setter
+    def masher_opts(self, opts):
+        """Property(setter): masher_opts (createrepo options)
+        """
+        self._masher_opts = opts
+
+    @property
+    def masher_workers(self):
+        """Property: masher_workers (createrepo workers)
+        """
+        return self._masher_workers
+
+    @masher_workers.setter
+    def masher_workers(self, nb):
+        """Property(setter): masher_workers (createrepo workers)
+        """
+        self._masher_workers = int(nb)
+
     @classmethod
     def read_config(cls, fname):
         """Read config file
@@ -89,6 +114,16 @@ class Config(object):
         config.default_substitutions["releasever"] = \
             conf.get("main", "releasever")
         config.default_substitutions["basearch"] = conf.get("main", "basearch")
+
+        try:
+            config.masher_opts = conf.get("masher", "opts")
+            config.masher_workers = conf.getint("masher", "workers")
+        except configparser.NoSectionError:
+            print("Warning: Masher has not been configured")
+        except configparser.NoOptionError:
+            print("Warning: Masher options has not been defined."
+                  "Using default parameters")
+
         sources = [section for section in conf.sections()
                    if section.startswith("sources")]
         config.sources = []

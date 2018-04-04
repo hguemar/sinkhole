@@ -7,6 +7,7 @@ import argparse
 
 from sinkhole.config import Config
 from sinkhole.kojidl import KojiDownloader
+from sinkhole.masher import RepoMasher
 from sinkhole.repo import Reposync
 from sinkhole.source import SourceBuilder
 
@@ -56,6 +57,8 @@ def main():
         sources = SourceBuilder.build()
         for source in sources:
             source.run()
+        rm = RepoMasher(config.output_dir)
+        rm.run()
 
 
 if __name__ == '__main__':

@@ -16,3 +16,6 @@ type=koji
 profile=koji
 constraints=contrib/sources/koji_constraints
 
+[masher]
+opts=-v --xz
+workers=6

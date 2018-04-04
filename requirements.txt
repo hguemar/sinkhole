@@ -1,5 +1,6 @@
 #dnf is not on PyPI
 #dnf
+sh
 six>=1.10
 PyYAML
 requests
